@@ -48,7 +48,7 @@ void setup()
 
   initWiFi();
 
-  voltageSensor.setZeroPoint(2866);
+  voltageSensor.setZeroPoint(2966);
   voltageSensor.setSensitivity(0.010000);
 
   Serial.println("setup OK.");
@@ -61,15 +61,20 @@ void loop()
   float tensao = voltageSensor.getVoltageAC(60);
   Serial.println("Tensao: " + String(tensao) + "V");
 
-  if (tensao > 0)
+  if (tensao > 200)
   {
     _tensaoAcc += tensao;
     _tensaoCnt++;
   }
+  else
+  {
+    _tensaoAcc = tensao;
+    _tensaoCnt = 1;
+  }
 
   unsigned long currentMillis = millis();
   // ping e electricity de 15 em 15 minutos
-  if (tensao < 100.0 || _clientLastPingElectricity == 0 || ((currentMillis - _clientLastPingElectricity) > _clientCheckInterval))
+  if (_clientLastPingElectricity == 0 || ((currentMillis - _clientLastPingElectricity) > _clientCheckInterval))
   {
     _token = getToken();
     pingClient(_token);
